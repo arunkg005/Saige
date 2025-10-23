@@ -1,0 +1,141 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'register.css' %}">
+{% comment %} <img src="{% static 'images' %}" ...> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'register.css' %}"> 
+  <title>Sign-in | SAIGE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="{% static 'img/logo.png' %}" type="image/x-icon"> 
+</head>
+
+<body>
+  <div class="container">
+    <div class="box">
+      {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li style="color:red; list-style:none;">{{ message }}</li>
+            {% endfor %}
+        </ul>
+      {% endif %}
+      
+      <div class="leftbox">
+        <div class="heading">
+          <h1>Sign-in to SAIGE</h1>
+        </div>
+        <div class="welcome">
+          <p>Welcome to SAIGE — your smart cooking companion!
+            Turn your everyday ingredients into delicious recipes in seconds.</p>
+        </div>
+        
+        <form method="POST" action="{% url 'login' %}" class="main">
+          {% csrf_token %}
+          <div class="email">
+            <label for="id_username_login">Email/Username</label>
+            <input type="text" id="id_username_login" name="username" placeholder="Enter your email or username" required>
+          </div>
+
+          <div class="password">
+            <label for="id_password_login">Password</label>
+            <input type="password" id="id_password_login" name="password" placeholder="Enter your Password" required>
+          </div>
+          
+          <button type="submit">
+            <p>Sign in</p>
+          </button>
+        </form>
+        <span>Don't you have an account? <a href="#" id="showSignup">Sign up</a></span>
+      </div>
+      
+      <div class="rightbox">
+        <div class="right-inner">
+          <div class="slideshow">
+            <img src="{% static 'images\register_img\login_img.jpg' %}" class="slide active" alt="slide 1">
+            <img src="{% static 'images\register_img\login_img3.jpg' %}" class="slide" alt="slide 2">
+            <img src="{% static 'images\register_img\login_img5.jpg' %}" class="slide" alt="slide 3">
+            <img src="{% static 'images\register_img\login_img6.webp' %}" class="slide" alt="slide 4">
+            <img src="{% static 'images\register_img\login_img7.jpg' %}" class="slide" alt="slide 5">
+            <img src="{% static 'images\register_img\login_img8.webp' %}" class="slide" alt="slide 6">
+            <img src="{% static 'images\register_img\login_img9.jpg' %}" class="slide" alt="slide 7">
+          </div>
+
+          <form method="POST" action="{% url 'signup' %}" class="signup">
+            {% csrf_token %}
+            <div class="heading">
+              <h1>Sign-up to SAIGE</h1>
+            </div>
+            
+            <div class="name">
+              <label for="id_username_signup">Username</label> 
+              <input type="text" id="id_username_signup" name="username" placeholder="Choose a Username" required>
+            </div>
+
+            <div class="email">
+              <label for="id_email_signup">Email</label>
+              <input type="email" id="id_email_signup" name="email" placeholder="abcd@gmail.com" required>
+            </div>
+            
+            <div class="phno">
+              <label for="id_phone_signup">Enter your Number</label>
+              <input type="tel" id="id_phone_signup" name="phone_number" placeholder="1234567890">
+            </div>
+            
+            <div class="password">
+              <label for="id_password_signup">Enter your Password</label>
+              <input type="password" id="id_password_signup" name="password" required>
+            </div>
+
+            <div class="password">
+              <label for="id_confirm_password_signup">Confirm Password</label>
+              <input type="password" id="id_confirm_password_signup" name="confirm_password" required>
+            </div>
+
+            <button type="submit" id="submitSignup">
+                <p>Create</p>
+            </button>
+            
+            <button type="button" id="backToLogin" onclick="document.querySelector('.rightbox').classList.remove('signup-active')">
+              <p>Back to Login</p>
+            </button>
+          </form>
+          </div>
+      </div>
+      </div>
+  </div>
+  
+  <script>
+    // Slideshow logic
+    let slides = document.querySelectorAll('.slide');
+    let current = 0;
+
+    setInterval(() => {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }, 3000); // change every 3 seconds
+
+    // Toggle signup view logic
+    const signupLink = document.getElementById("showSignup");
+    const rightBox = document.querySelector(".rightbox");
+
+    signupLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      rightBox.classList.add("signup-active");
+    });
+    
+    // Optional: Make the backToLogin button in the signup form functional
+    document.getElementById("backToLogin").addEventListener("click", () => {
+      rightBox.classList.remove("signup-active");
+    });
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saige</title>
+    <link rel="shortcut icon" href="{% static 'images/logo.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'landing.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="nav">
+                <div class="leftnav">
+                    <img src="{% static 'images/logo.png' %}" alt="">
+                    <h1>SAIGE</h1>
+                </div>
+                <div class="rightnav">
+                    <a href="#Home" id="home">
+                        <!-- SVG icon unchanged -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
+                            <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+                        </svg>
+                    </a>
+                    <a href="#">All Recipes</a>
+                    <a href="#">Smart Suggestions</a>
+                    <a href="#">Categories</a>
+                    <a href="{% url 'login' %}">Login/Register</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="hero">
+            <div class="home">
+                <div class="main img">
+                    <img src="{% static 'images/landing_img/bg.svg' %}" alt="home">
+                </div>
+                <div class="main title">
+                    <h1>Best food for</h1>
+                    <h1>your taste</h1>
+                    <p>Discover detectable cuisine and unforgettable moments <br> in our welcoming, culinary haven.</p>
+                    <span><button>Explore Recipes</button></span>
+                </div>
+            </div>
+        </div>
+        <div class="secondpage">
+            <div class="heading">
+                <h1>We Suggest the best Recipes</h1>
+            </div>
+            <div class="grids">
+                <div class="first grid">
+                    <img src="{% static 'images/landing_img/Pavbhaji.jpg' %}" alt="">
+                    <div class="overlay"></div>
+                    <h2>Pav Bhaji</h2>
+                </div>
+                <div class="second grid">
+                    <img src="{% static 'images/landing_img/Chholebhature.jpg' %}" alt="">
+                    <div class="overlay"></div>
+                    <h2>Chhole Bhature</h2>
+                </div>
+                <div class="third grid">
+                    <img src="{% static 'images/landing_img/Gulabjamun.webp' %}" alt="">
+                    <div class="overlay"></div>
+                    <h2>Gulab Jamun</h2>
+                </div>
+                <div class="fourth grid">
+                    <img src="{% static 'images/landing_img/Dhokla.webp' %}" alt="">
+                    <div class="overlay"></div>
+                    <h2>Dhokla</h2>
+                </div>
+            </div>
+        </div>
+        <div class="thirdpage">
+            <div class="heading">
+                <h1>Recipes by Categories</h1>
+            </div>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <img src="{% static 'images/landing_img/breakfast.jpg' %}" alt="Breakfast">
+                    <div class="overlay"></div>
+                    <h2>Breakfast</h2>
+                </div>
+                <div class="category-card">
+                    <img src="{% static 'images/landing_img/lunch.jpg' %}" alt="Lunch">
+                    <div class="overlay"></div>
+                    <h2>Lunch</h2>
+                </div>
+                <div class="category-card">
+                    <img src="{% static 'images/landing_img/dinner.jpg' %}" alt="Dinner">
+                    <div class="overlay"></div>
+                    <h2>Dinner</h2>
+                </div>
+                <div class="category-card">
+                    <img src="{% static 'images/landing_img/snacks.jpg' %}" alt="Snacks">
+                    <div class="overlay"></div>
+                    <h2>Snacks</h2>
+                </div>
+                <div class="category-card">
+                    <img src="{% static 'images/landing_img/desserts.webp' %}" alt="Desserts">
+                    <div class="overlay"></div>
+                    <h2>Desserts</h2>
+                </div>
+                <div class="category-card">
+                    <img src="{% static 'images/landing_img/beverages.jpeg' %}" alt="Beverages">
+                    <div class="overlay"></div>
+                    <h2>Beverages</h2>
+                </div>
+            </div>
+        </div>
+        <div class="about" id="about">
+            <h2>About Us</h2>
+            <div class="bgimage"> <img src="{% static 'images/landing_img/bgimage.jpg' %}" alt="bgimage"> </div>
+            <div class="members">
+                <div class="member">
+                    <img src="{% static 'images/landing_img/Archita.jpg' %}" alt="Archita">
+                    <h3>Archita Garg</h3>
+                    <span>Hi! I’m Archita, the backend powerhouse of our project. ...</span>
+                </div>
+                <div class="member">
+                    <img src="{% static 'images/landing_img/Ashmit.jpg' %}" alt="Ashmit">
+                    <h3>Ashmit Tanwar</h3>
+                    <span>Hello! I’m Ashmit, the frontend developer ...</span>
+                </div>
+                <div class="member">
+                    <img src="{% static 'images/landing_img/Khushi.jpg' %}" alt="Khushi">
+                    <h3>Khushi Singh</h3>
+                    <span>Hey there! I’m Khushi, working alongside Ashmit ...</span>
+                </div>
+                <div class="member">
+                    <img src="{% static 'images/landing_img/Arun.jpg' %}" alt="Arun">
+                    <h3>Arun Kumar Gupta</h3>
+                    <span>Hi! I’m Arun, the one who brings AI into our project. ...</span>
+                </div>
+            </div>
+        </div>
+        <div class="contact" id="contact">
+            <h2>Contact Us</h2>
+            <div class="contact-info">
+                <p>Phone: +91 7206164734 </p>
+                <p>Email: khushisingh.happy2001@gmail.com</p>
+                <p>Instagram: @arungupta0075</p>
+                <p>Address: Sector 22, Chandigarh, Punjab, India</p>
+                <p>Our GitHub</p>
+                <a href="https://github.com/archita5793g">Github</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
