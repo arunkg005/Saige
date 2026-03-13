@@ -11,7 +11,7 @@ import google.generativeai as genai
 
 # --- Load API key from .env manually ---
 # (This loading logic seems correct based on your previous code)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent # Adjust if views.py location changes
+BASE_DIR = Path(__file__).resolve().parent.parent.parent / 'saige'  # Explicitly set BASE_DIR to the 'saige' folder
 ENV_PATH = BASE_DIR / 'saige' / '.env'
 if not ENV_PATH.exists():
     ENV_PATH = BASE_DIR / '.env' # Check root
@@ -81,23 +81,76 @@ def recc_page_view(request: HttpRequest):
             return render(request, "recc_page.html", context)
 
         # --- Call Gemini API to get signals ---
+        # --- Updated Prompt to include Dish Name logic ---
         prompt = f"""
-        Convert the following user input into a JSON dictionary with these keys:
-        'Diet_Type' (choose from ['Vegan', 'Veg', 'Keto', 'Non-Veg', 'any']),
-        'Essential_Ingredients' (list of lowercase strings),
-        'Other_Ingredients' (list of lowercase strings),
-        'Taste_Profile' (choose from ['Spicy', 'Savory', 'Sour', 'Mild', 'Sweet', 'Neutral', 'Bitter', 'any'])
+            Convert the following user input into a JSON dictionary with these keys:
+            'Diet_Type' (choose from ['Vegan', 'Veg', 'Keto', 'Non-Veg', 'any']),
+            'Essential_Ingredients' (list of lowercase strings ),
+            'Other_Ingredients' (list of lowercase strings),
+            'Taste_Profile' (choose from ['Spicy', 'Savory', 'Sour', 'Mild', 'Sweet', 'Neutral', 'Bitter', 'any']),
+            'Dish_Name' (return the correct main dish name if the user input clearly specifies a dish they want to eat, with proper spelling. Only return if the dish name is explicitly mentioned or clearly implied. Do not return a dish name if it is used as a reference for taste or merged with ingredient names.)
 
-        Rules:
-        - Return ONLY a valid JSON object. No extra text before or after.
-        - If a signal is not mentioned, use "any" for Diet_Type and Taste_Profile, and an empty list [] for ingredients.
-        - "Essential_Ingredients" are main foods (e.g., chicken, potato, rice). Convert to lowercase.
-        - "Other_Ingredients" are spices, herbs, secondary items (e.g., curry leaves, garlic). Convert to lowercase.
-        - Be concise with ingredient names (e.g., "onion" not "one medium onion").
+            VERY IMPORTANT RULES:
 
-        User input: "{user_text}"
-        JSON Output:
-        """
+            1. **Agar user sirf dish ka naam likhe** (jaise "biryani", "pav bhaji", "rajma chawal"):
+            - Tab bhi us dish ke common / typical ingredients ka best guess do.
+            - "Essential_Ingredients" me main cheezein (jaise "rice", "chicken", "potato").
+            - "Other_Ingredients" me spices, herbs, aur helpers (jaise "garam masala", "ginger", "garlic").
+
+            2. **Kabhi bhi sirf dish name ke saath empty ingredient lists mat bhejo.**
+            - Agar dish name mila hai, to "Essential_Ingredients" aur "Other_Ingredients" dono me kuch na kuch items zaroor hone chahiye.
+            - Sirf us case me [] use karo jab na dish ka naam ho, na ingredients ka koi hint ho.
+
+            3. "Essential_Ingredients":
+            - Sirf main food items jo dish banane ke liye zaroori hote hain.
+            - Example: "rice", "chicken", "potato", "paneer".
+            - Sab lowercase me.
+
+            4. "Other_Ingredients":
+            - Spices, herbs, aur optional / secondary items.
+            - Example: "cumin seeds", "garam masala", "coriander leaves", "ginger", "garlic".
+            - Sab lowercase me.
+
+            5. "Taste_Profile":
+            - Agar user ne spicy / sweet / tangy waghara mention kiya ho to uska best match select karo.
+            - Agar kuch clear nahi hai, to "any" use karo.
+
+            6. "Dish_Name":
+            - Agar user clearly kisi dish ko eat / cook karna chah raha hai (e.g., "I want to eat biryani today" ya "bana pav bhaji"), to proper spelled dish name string me do.
+            - Agar dish sirf example ke liye mention hai (jaise "I don't want biryani"), to tab "Dish_Name" ko null (ya empty string) rakho.
+
+            7. Output format:
+            - Sirf ek valid JSON object return karo.
+            - JSON ke bahar koi extra text, explanation, comments, ya markdown mat likho.
+
+            Example 1:
+            User input: "biryani"
+            Possible JSON (approx):
+            {{
+            "Diet_Type": "any",
+            "Essential_Ingredients": ["rice", "onion", "tomato"],
+            "Other_Ingredients": ["garam masala", "ginger", "garlic"],
+            "Taste_Profile": "Spicy",
+            "Dish_Name": "Biryani"
+            }}
+
+            Example 2:
+            User input: "make veg biryani with less oil"
+            Possible JSON (approx):
+            {{
+            "Diet_Type": "Veg",
+            "Essential_Ingredients": ["rice", "mixed vegetables"],
+            "Other_Ingredients": ["garam masala", "ginger", "garlic"],
+            "Taste_Profile": "Spicy",
+            "Dish_Name": "Veg Biryani"
+            }}
+            
+
+            Now process this input:
+
+            User input: "{user_text}"
+            JSON Output:
+            """
 
         model_output = None # Initialize variable
         user_query = None
@@ -172,6 +225,31 @@ def recc_page_view(request: HttpRequest):
                 print(f"--- [views.py ERROR]: {error_msg} ---")
                 context["fallback_msg"] = error_msg
 
+            # --- Search Mechanism for Dish Name in CSV ---
+            import pandas as pd  # Ensure pandas is imported
+
+            # Load the CSV file once (can be optimized further if needed)
+            csv_path = BASE_DIR / 'recc' / 'saige_model' / 'clustered_recipes.csv'  # Update the CSV path to use the corrected BASE_DIR
+            recipes_df = pd.read_csv(csv_path)
+
+            # Initialize search_results to avoid UnboundLocalError
+            search_results = []
+
+            dish_name = user_query.get('Dish_Name')
+            if dish_name:
+                dish_name = dish_name.strip().lower()
+                # Perform partial match instead of exact match
+                search_results = recipes_df[recipes_df['TranslatedRecipeName'].str.contains(dish_name, case=False, na=False)].to_dict('records')
+
+            # Add search results to context if any matches are found
+            if search_results:
+                context['search_results'] = search_results
+
+            # --- Prioritize Search Results in Recommendations ---
+            if search_results:
+                # If search results are found, show them first
+                context['recommendations'] = search_results + context['recommendations']
+
             return render(request, "recc_page.html", context)
         else:
              # Should not happen if error handling above is correct, but just in case
@@ -180,3 +258,6 @@ def recc_page_view(request: HttpRequest):
 
     # Handle GET request (show the empty page)
     return render(request, "recc_page.html", context)
+
+# Debugging the .env file path and API key loading
+print(f"--- [DEBUG] ENV_PATH: {ENV_PATH} ---")

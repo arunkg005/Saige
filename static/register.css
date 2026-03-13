@@ -20,6 +20,27 @@
     display: flex;
     border-radius: 2vw;
 }
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.nav svg {
+    width: 30px;
+    height: 30px;
+    color: #333;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav svg:hover {
+    color: #007bff;
+}
 
 .leftbox {
     margin-top: 4vw;
@@ -195,4 +216,19 @@ span a {
 
 .slide.active {
     opacity: 1;
+}
+.close {
+    margin-top: 2vw;
+    margin-right: 1vw;
+    display: inline-block;
+    color: black;
+    transition: transform 0.3s ease-in-out;
+}
+.close svg{
+    margin-top: 2vw;
+}
+
+.close svg:hover {
+    transform: scale(1.1);
+    color: #000000;
 }

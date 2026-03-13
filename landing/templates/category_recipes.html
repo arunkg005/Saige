@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Recipes</title>
+    <link rel="stylesheet" href="{% static 'category.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="nav">
+                <div class="leftnav">
+                    <img src="{% static 'images/landing_img/saige_logo.png' %}" alt="">
+                    <h1>SAIGE</h1>
+                </div>
+                <div class="rightnav">
+                    <a href="{% url 'landing_page' %}">Home</a>
+                </div>
+            </div>
+        </header>
+        <div class="category-title">
+            <h1>{{ category_name }} Recipes</h1>
+        </div>
+        <div class="categories-grid">
+            {% for recipe in recipes|slice:":12" %}
+            <div class="category-card">
+                <img src="{{ recipe.image_url }}" alt="{{ recipe.name }}">
+                <div class="overlay"></div>
+                <h2>{{ recipe.name }}</h2>
+                <a href="{{ recipe.recipe_url }}" target="_blank">View Recipe</a>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">&laquo; Prev</a>
+            {% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

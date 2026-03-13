@@ -13,11 +13,26 @@
 
   <div class="nav">
     <div class="leftnav">
-      <a href="{% url 'landing_page' %}">Homepage</a>
+    <a href="{% url 'landing_page' %}" class="nav-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+       class="bi bi-house" viewBox="0 0 16 16">
+    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 
+             0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 
+             5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 
+             7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z"/>
+  </svg>
+</a>
     </div>
     <div class="rightnav">
-      <img src="" alt="profile">
-    </div>
+    <a href="">
+        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-circle"
+            viewBox="0 0 16 16">
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+            <path fill-rule="evenodd"
+                d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+        </svg>
+    </a>
+</div>
   </div>
 
   <header class="header">
@@ -29,25 +44,46 @@
     </form>
   </header>
 
-  <main class="recipe-grid">
-    {% if recommendations %}
-      {% for rec in recommendations %}
+ <main>
+
+  {% if search_results %}
+    <h2 class="section-title">Search Results</h2>
+    <section class="recipe-grid">
+      {% for result in search_results %}
         <article class="recipe-card">
-          <img src="{{ rec.image_url|default:'https://via.placeholder.com/150' }}" alt="{{ rec.Name }}">
           <div class="content">
-            <h2>{{ rec.Name }}</h2>
-            <p>⏱ {{ rec.total_time_mins|default:'N/A' }} mins | 🍽 {{ rec.essential_ingredients|length|default:'N/A' }} essential ingredients</p>
-            <p>{{ rec.reason_for_recommendation|default:'' }}</p>
-            <a href="{{ rec.recipe_url|default:'#' }}" target="_blank">View Recipe</a>
+            <h2>{{ result.TranslatedRecipeName }}</h2>
+            <p>⏱ {{ result.TotalTimeInMins|default:'N/A' }} mins</p>
+            <a href="{{ result.URL|default:'#' }}" target="_blank">View Recipe</a>
           </div>
         </article>
       {% endfor %}
-    {% elif fallback_msg %}
-      <p>{{ fallback_msg }}</p>
-    {% else %}
-      <p>No recipes found. Try searching for something!</p>
-    {% endif %}
-  </main>
+    </section>
+  {% endif %}
+
+  {% if recommendations %}
+    <h2 class="section-title">Recommended Recipes</h2>
+    <section class="recipe-grid">
+      {% for rec in recommendations %}
+        {% if rec.Name and rec.recipe_url and rec.image_url %}
+          <article class="recipe-card">
+            <div class="content">
+              <h2>{{ rec.Name }}</h2>
+              <p>⏱ {{ rec.total_time_mins|default:'N/A' }} mins </p>
+              <a href="{{ rec.recipe_url|default:'#' }}" target="_blank">View Recipe</a>
+            </div>
+          </article>
+        {% endif %}
+      {% endfor %}
+    </section>
+  {% elif fallback_msg %}
+    <p>{{ fallback_msg }}</p>
+  {% else %}
+    <p>No recipes found. Try searching for something!</p>
+  {% endif %}
+
+</main>
+
 
   {% comment %} <div class="pagination">
     <button>&laquo; Prev</button>
