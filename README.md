@@ -50,6 +50,7 @@ It combines user input, Gemini-based query understanding, and a local ML recomme
    ```bash
    pip install -r requirements_noversion.txt
    ```
+   > This repository tracks dependencies in `requirements_noversion.txt` (instead of `requirements.txt`).
 4. Configure environment:
    - Create a `.env` file in the project root (or `saige/`).
    - Add your Gemini key:
