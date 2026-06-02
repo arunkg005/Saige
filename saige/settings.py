@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'saige.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mydb',
+        'NAME': 'saige_db',
         'USER': 'db_user',
         'PASSWORD': '1754',
         'HOST': 'localhost',

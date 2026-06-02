@@ -8,33 +8,27 @@ from pathlib import Path
 # Adjust the import path if needed (e.g., from ..pipeline.recipe_pipeline import ...)
 from .saige_model.saige_m1 import get_recommendations
 import google.generativeai as genai
+from dotenv import dotenv_values
 
 # --- Load API key from .env manually ---
 # (This loading logic seems correct based on your previous code)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent / 'saige'  # Explicitly set BASE_DIR to the 'saige' folder
-ENV_PATH = BASE_DIR / 'saige' / '.env'
-if not ENV_PATH.exists():
-    ENV_PATH = BASE_DIR / '.env' # Check root
+BASE_DIR = settings.BASE_DIR
+ENV_PATH = BASE_DIR / '.env'
 
-GEMINI_API_KEY = None
+env_values = dotenv_values(ENV_PATH)
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY') or os.getenv('saige_key')
+if not GEMINI_API_KEY:
+    GEMINI_API_KEY = env_values.get('GEMINI_API_KEY') or env_values.get('GOOGLE_API_KEY') or env_values.get('saige_key')
+
 try:
-    with open(ENV_PATH) as f:
-        for line in f:
-            line = line.strip()
-            if line and not line.startswith('#') and '=' in line:
-                key, value = line.split('=', 1)
-                # Ensure this key name matches EXACTLY what's in your .env file
-                if key == 'saige_key':
-                    GEMINI_API_KEY = value.strip().replace('"', '').replace("'", "")
-                    break
+    if not ENV_PATH.exists():
+        raise FileNotFoundError
 except FileNotFoundError:
-    print(f"--- [views.py ERROR]: .env file not found at {ENV_PATH} or {BASE_DIR / '.env'} ---")
+    print(f"--- [views.py ERROR]: .env file not found at {ENV_PATH} ---")
     # You might want to raise an ImproperlyConfigured exception here in production
-except Exception as e:
-    print(f"--- [views.py ERROR] reading .env file: {e} ---")
 
 if not GEMINI_API_KEY:
-    print("--- [views.py WARNING]: Could not find 'saige_key' in .env file. API calls might fail. ---")
+    print("--- [views.py WARNING]: Could not find a Gemini API key in .env file or environment. API calls might fail. ---")
     # Decide how to handle this - maybe raise an error or use a default?
 
 # --- Configure the API ---
@@ -158,7 +152,7 @@ def recc_page_view(request: HttpRequest):
         try:
             # 1. Initialize the model
             # !!! PASTE THE CORRECT MODEL NAME FROM check_models.py HERE !!!
-            model_name_from_listmodels = 'models/gemini-2.0-flash' # <-- REPLACE THIS PLACEHOLDER
+            model_name_from_listmodels = 'models/gemini-3.1-flash-lite' # <-- REPLACE THIS PLACEHOLDER
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
             model = genai.GenerativeModel(
@@ -215,7 +209,7 @@ def recc_page_view(request: HttpRequest):
         if user_query:
             try:
                 print(f"--- [views.py INFO]: Calling recipe pipeline with signals: {user_query} ---")
-                recommendations, fallback_msg = get_recommendations(user_query, top_n=5)
+                recommendations, fallback_msg = get_recommendations(user_query, top_n=20)
                 context["recommendations"] = recommendations
                 context["fallback_msg"] = fallback_msg
                 print(f"--- [views.py INFO]: Pipeline returned {len(recommendations)} recommendations. ---")
